@@ -2,18 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+<!--    <link rel="stylesheet" type="text/css" href="styles.css">-->
+    <!-- Link to Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
     <title>Webcam Capture</title>
     <style>
+      #heading {
+        position: fixed;
+        top: 0;
+        left: 450px;
+        padding: 20px;
+        font-size: 60px;
+        font-family: Arial, sans-serif;
+        color: #E75480;
+      }
+
       #video-container {
-        margin: auto;
-        width: 640px;
-        height: 480px;
+        margin: 170px auto 0;
+        width: 500px;
+        height: 350px;
         border: 1px solid black;
       }
-      #capture-button {
-        margin-top: 10px;
-        padding: 5px 10px;
-        font-size: 16px;
+      form {
+        background-color: #f7f7f7;
+        padding: 20px;
+        margin-top:95px;
       }
     </style>
   </head>
@@ -25,28 +40,212 @@
         style="width: 100%; height: 100%"
       />
     </div>
-    <button id="capture-button">Capture</button>
+<!--    <button id="capture-button">Capture</button>-->
+
+    <!---------- Code to display Buttons, label and textfield ------------>
+    <div class="row" id="heading">Emotion Recognition System</div>
+
+    <form id="form">
+      <div class="container">
+        <div class="row">
+          <div class="col-auto form-floating mb-3">
+            <input type="text"  class="form-control" id="bp-value" placeholder="Enter Pulse Value">
+          </div>
+          <div class="col-auto">
+            <button  class="btn btn-dark mb-3" id="capture-voice">Record Voice</button>
+          </div>
+          <div class="col-auto">
+            <button id="capture-button" class="btn btn-dark mb-3" onClick=toggleCapture()>Capture</button>
+          </div>
+          <div class="col-auto">
+            <button  class="btn btn-success btn-lg" id="sendButton" onclick="updateLabel(); validateForm(); myfunction();">Predict Emotion</button>
+          </div>
+          <div class="col-auto">
+            <label id="predicted-emotion" class="visually-hidden">Predicted Emotion</label>
+          </div>
+        </div>
+      </div>
+    </form>
+
     <script>
-      var captureStatus = false;
-      var captureButton = document.getElementById("capture-button");
 
-      // Function to start or stop the capture
-      function toggleCapture() {
-        captureStatus = !captureStatus;
 
-        // Send an AJAX request to start or stop the capture
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", captureStatus ? "/start_capture" : "/stop_capture");
-        xhr.send();
+/******** Code to get audio and send to backend********/
+console.log("Working");
+function record(){
+console.log('hello');
+<!--  fetch('/record_voice', { method: 'POST' })-->
+<!--    .then(response => {-->
+<!--      if (response.ok) {-->
+<!--        console.log('Recording started');-->
+<!--      } else {-->
+<!--        console.error('Error:', response.status);-->
+<!--      }-->
+<!--    })-->
+<!--    .catch(error => {-->
+<!--      console.error('Error:', error);-->
+<!--    });-->
+}
 
-        // Update the button text
-        captureButton.innerText = captureStatus
-          ? "Recapture"
-          : "Capture";
-      }
+const buttonRecord = document.getElementById("capture-voice");
 
-      // Attach the toggleCapture function to the capture button click event
-      captureButton.addEventListener("click", toggleCapture);
+buttonRecord.addEventListener("click", record);
+
+
+
+
+/************** Code to get input value from textbox and send that to backend *************/
+
+var button = document.getElementById("sendButton");
+var input = document.getElementById("bp-value");
+var label = document.getElementById("predicted-emotion");
+
+function updateLabel(text) {
+var label = document.getElementById("predicted-emotion");
+  label.innerHTML = text;
+}
+
+document.getElementById("sendButton").addEventListener("click", function(event) {
+event.preventDefault();
+  var inputValue = input.value;
+
+  fetch('/get_label_text', {
+    method: 'POST',
+    body: JSON.stringify({inputValue: inputValue}),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.text())
+  .then(text => {
+    // Call the updateLabel function to update the label text
+    updateLabel(text);
+  });
+});
+
+<!--document.getElementById("sendButton").addEventListener("click", function(event) {-->
+<!--  event.preventDefault();-->
+
+<!--  var inputValue = document.getElementById("input").value;-->
+
+<!--  fetch('/get_label_text', {-->
+<!--    method: 'POST',-->
+<!--    body: JSON.stringify({inputValue: inputValue}),-->
+<!--    headers: {-->
+<!--      'Content-Type': 'application/json'-->
+<!--    }-->
+<!--  })-->
+<!--  .then(response => response.text())-->
+<!--  .then(text => {-->
+<!--    // Call the updateLabel function to update the label text-->
+<!--    updateLabel(text);-->
+<!--  });-->
+<!--});-->
+
+
+    /********** code to show recording is in progress *********/
+        // var button = document.getElementById("capture-voice");
+        // var text = document.getElementById("myText");
+
+        // button.addEventListener("click", function(event) {
+        //   event.preventDefault();
+        //   text.style.display = "block";
+        //   setTimeout(function() {
+        //     text.style.display = "none";
+        //   }, 3000); // displays text for 3 seconds
+        // });
+
+      /********* Function to validate inputs ***********/
+      function validateForm() {
+        var bpval = document.getElementById("bp-value").value;
+<!--        var speech = document.getElementById("capture-voice").value;-->
+<!--        var image = document.getElementById("capture-button").value;-->
+        //if BP input is empty
+        if (bpval == "") {
+          alert("BP Value must be filled out");
+          return false;
+        }
+<!--        //if speech input is empty-->
+<!--if (speech == "") {-->
+<!--          alert("Speech Must be Recorded");-->
+<!--          return false;-->
+<!--        }-->
+<!--        //if image imput is empty-->
+<!--         if (image == "") {-->
+<!--          alert("Image Must be Captured");-->
+<!--          return false;-->
+<!--        }-->
+<!--      }-->
+
     </script>
+
+  <script>
+
+
+
+var button = document.getElementById("sendButton");
+var input = document.getElementById("bp-value");
+var label = document.getElementById("predicted-emotion");
+
+function updateLabel(text) {
+var label = document.getElementById("predicted-emotion");
+  label.innerHTML = text;
+}
+
+document.getElementById("sendButton").addEventListener("click", function(event) {
+event.preventDefault();
+  var inputValue = input.value;
+
+  fetch('/get_label_text', {
+    method: 'POST',
+    body: JSON.stringify({inputValue: inputValue}),
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.text())
+  .then(text => {
+    // Call the updateLabel function to update the label text
+    updateLabel(text);
+  });
+});
+
+
+
+
+document.getElementById('capture-voice').addEventListener('click', function() {
+  console.log('hello');
+  fetch('/record_voice', { method: 'POST' })
+    .then(response => {
+      if (response.ok) {
+        console.log('Recording started');
+      } else {
+        console.error('Error:', response.status);
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+});
+  var captureStatus = false;
+  var captureButton = document.getElementById("capture-button");
+
+  // Function to start or stop the capture
+  function toggleCapture(event) {
+    event.preventDefault();
+    captureStatus = !captureStatus;
+
+    // Send an AJAX request to start or stop the capture
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", captureStatus ? "/start_capture" : "/stop_capture");
+    xhr.send();
+
+    // Update the button text
+    captureButton.innerText = captureStatus ? "Recapture" : "Capture";
+  }
+  // Attach the toggleCapture function to the capture button click event
+  captureButton.addEventListener("click", toggleCapture);
+</script>
+
   </body>
 </html>

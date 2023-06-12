@@ -13,22 +13,27 @@ warnings.filterwarnings("ignore")
 
 #Extract features values like (mfcc, chroma, mel) from a single sound file
 
+
+
+#DataFlair - Extract features (mfcc, chroma, mel) from a sound file
 def extract_feature(file_name):
     with soundfile.SoundFile(file_name) as sound_file:
         X = sound_file.read(dtype="float32")
         sample_rate=sound_file.samplerate
-        stft = np.abs(librosa.stft(X))  # short time fourier transform for  pitch detection
 
-        result = np.array([])
+        stft=np.abs(librosa.stft(X))
+        result=np.array([])
 
-        mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T, axis=0)
-        result = np.hstack((result, mfccs))
+        mfccs=np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=40).T, axis=0)
+        result=np.hstack((result, mfccs))
 
-        chroma = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T,axis=0)
-        result = np.hstack((result, chroma))
+        chroma=np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T,axis=0)
+        result=np.hstack((result, chroma))
 
-        mel = np.mean(librosa.feature.melspectrogram(y=X, sr=sample_rate).T,axis=0)
-        result = np.hstack((result, mel))
+        #mel=np.mean(librosa.feature.melspectrogram(y=X, sr=sample_rate).T,axis=0)
+        mel = np.mean(librosa.feature.melspectrogram(y=X, sr=sample_rate, n_fft=2048).T, axis=0)
+
+        result=np.hstack((result, mel))
 
     return result
 
@@ -46,27 +51,18 @@ def three_emotion(emotion):
         return 'positive' #we return positive as it is only left
 
 def voice_emotion_pred():
-    #Emotions in the RAVDESS dataset
-    emotions={
-      '01':'neutral', #neutral=calm, neutral, surprised
-      '02':'calm', #positive=happy
-      '03':'happy', #negative=angry,fearful,disgust,sad
-      '04':'sad',
-      '05':'angry',
-      '06':'fearful',
-      '07':'disgust',
-      '08':'surprised'
-    }
 
-    vc_model = joblib.load("emotion_model.pkl")
-    path = "C:/Users/princ/PycharmProjects/EmoReg/Modules/voice_model/sample.wav"
+    vc_model = joblib.load("C:/Users/princ/PycharmProjects/EmoReg/Modules/voice_model/voice_model.sav")
+    path = "C:/Users/princ/PycharmProjects/EmoReg/Modules/voice_model/recorded_audio.wav"
 
-    data = extract_feature(path)
+    data = []
+    data.append(extract_feature(path))
 
 
-    print(vc_model.predict(data))
+    emo = vc_model.predict(data)
+    emo = three_emotion(emo)
 
 
-    return 'hello'
+    return emo
 
-print(voice_emotion_pred())
+#print('Voice Emotion: ' + voice_emotion_pred())

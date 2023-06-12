@@ -1,4 +1,4 @@
-from keras.models import  model_from_json
+from keras.models import model_from_json
 from keras.models import load_model
 import cv2
 import numpy as np
@@ -12,12 +12,12 @@ def face_emotion_detection():
 
     # Load the saved model
 
-    json_file = open('model.json', 'r')
+    json_file = open('C:/Users/princ/PycharmProjects/EmoReg/Modules/face_model/model.json', 'r')
     loaded_model_json = json_file.read()
     json_file.close()
     model = model_from_json(loaded_model_json)
     # load weights into new model
-    model.load_weights("emotion_recognition_model.h5")
+    model.load_weights("C:/Users/princ/PycharmProjects/EmoReg/Modules/face_model/emotion_recognition_model.h5")
 
 
     # evaluate loaded model on test data
@@ -43,4 +43,4 @@ def face_emotion_detection():
     finemotion = finemotions[finemotion_idx]
     return finemotion
 
-
+print('Face emotion: ' + face_emotion_detection())
